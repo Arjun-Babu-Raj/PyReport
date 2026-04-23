@@ -8,12 +8,12 @@ tags:
   - open science
 authors:
   - name: Arjun Babu Raj
-    orcid: 0000-0000-0000-0000
+    orcid: 0000-0000-0000-0000   # TODO: replace with your real ORCID (https://orcid.org)
     affiliation: 1
 affiliations:
-  - name: Independent Researcher
+  - name: Independent Researcher   # TODO: replace with your institution name
     index: 1
-date: 2024-01-01
+date: 2024-01-01   # TODO: update to the actual submission date (YYYY-MM-DD)
 bibliography: paper.bib
 ---
 

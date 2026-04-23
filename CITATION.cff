@@ -2,7 +2,7 @@ cff-version: 1.2.0
 message: "If you use pyreport in your research, please cite it using the metadata below."
 title: "pyreport: Publication-Ready Statistical Summaries in Python"
 version: "0.1.0"
-date-released: "2024-01-01"
+date-released: "2024-01-01"  # TODO: update to the actual v0.1.0 release date
 license: MIT
 url: "https://github.com/Arjun-Babu-Raj/PyReport"
 repository-code: "https://github.com/Arjun-Babu-Raj/PyReport"
@@ -23,8 +23,8 @@ keywords:
 authors:
   - family-names: "Babu Raj"
     given-names: "Arjun"
-    orcid: ""
-    affiliation: ""
+    orcid: ""          # TODO: add your ORCID identifier (https://orcid.org)
+    affiliation: ""    # TODO: add your institution name
 preferred-citation:
   type: software
   title: "pyreport: Publication-Ready Statistical Summaries in Python"
