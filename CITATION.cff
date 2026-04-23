@@ -1,0 +1,36 @@
+cff-version: 1.2.0
+message: "If you use pyreport in your research, please cite it using the metadata below."
+title: "pyreport: Publication-Ready Statistical Summaries in Python"
+version: "0.1.0"
+date-released: "2024-01-01"  # TODO: update to the actual v0.1.0 release date
+license: MIT
+url: "https://github.com/Arjun-Babu-Raj/PyReport"
+repository-code: "https://github.com/Arjun-Babu-Raj/PyReport"
+abstract: >
+  pyreport is a Python package that takes statistical result objects
+  (scipy tests, statsmodels fits, pandas DataFrames) and returns
+  publication-ready, human-readable plain-English summaries formatted
+  to APA 7th edition standards. It is a Python port of R's {report}
+  package and is designed to reduce the manual effort required to
+  translate statistical output into manuscript-ready text.
+keywords:
+  - statistics
+  - APA
+  - reporting
+  - psychology
+  - open science
+  - reproducibility
+authors:
+  - family-names: "Babu Raj"
+    given-names: "Arjun"
+    orcid: ""          # TODO: add your ORCID identifier (https://orcid.org)
+    affiliation: ""    # TODO: add your institution name
+preferred-citation:
+  type: software
+  title: "pyreport: Publication-Ready Statistical Summaries in Python"
+  authors:
+    - family-names: "Babu Raj"
+      given-names: "Arjun"
+  version: "0.1.0"
+  url: "https://github.com/Arjun-Babu-Raj/PyReport"
+  license: MIT
