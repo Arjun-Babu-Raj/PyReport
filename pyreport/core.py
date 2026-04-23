@@ -9,7 +9,7 @@ from typing import List, Optional
 
 import pandas as pd
 
-from .utils import detect_type
+from .utils import detect_type, _sanitize_stats
 
 
 # ---------------------------------------------------------------------------
@@ -51,12 +51,22 @@ class Report:
         warnings: Optional[List[str]] = None,
     ):
         self._text = text
-        self._statistics = statistics
+        self._statistics = _sanitize_stats(statistics)
         self._warnings = warnings or []
 
     # ------------------------------------------------------------------
     # Public accessors
     # ------------------------------------------------------------------
+
+    @property
+    def text(self) -> str:
+        """Human-readable plain-English summary (APA 7 formatted)."""
+        return self._text
+
+    @property
+    def statistics(self) -> dict:
+        """Dictionary of all extracted statistics (read-only copy)."""
+        return dict(self._statistics)
 
     def to_text(self) -> str:
         """Return the full report as a plain string, including any warnings."""
@@ -122,13 +132,30 @@ def report(obj, **kwargs) -> Report:
     - pingouin ANOVA DataFrame    → ANOVA report (pingouin)
     - pingouin correlation        → correlation report (pingouin)
 
+    Raw data shortcut
+    -----------------
+    If *obj* is a tuple or list of array-like objects, you can pass
+    ``test=`` to have pyreport run the underlying SciPy test and
+    immediately return a Report::
+
+        report((x, y), test="ttest")
+        report((x, y), test="mannwhitney", n1=30, n2=30)
+        report((x, y), test="correlation", n=50)
+        report((x, y, z), test="kruskal", k=3, n=90)
+        report((x - y,), test="wilcoxon", n=30)
+
+    Supported ``test`` values: ``"ttest"``, ``"mannwhitney"``,
+    ``"correlation"``, ``"kruskal"``, ``"wilcoxon"``.
+
     Parameters
     ----------
     obj:
-        Statistical object to report.
+        Statistical result object, ``pd.DataFrame``, or a tuple/list of
+        raw array-like data when used with ``test=``.
     **kwargs:
         Passed to the underlying reporter.  Common options:
 
+        - ``test``        (str)              — raw-data shortcut test name
         - ``effectsize`` (bool, default True) — include effect sizes
         - ``verbose``   (bool, default True) — include interpretation text
         - ``ci_level``  (float, default 0.95) — confidence level
@@ -144,6 +171,13 @@ def report(obj, **kwargs) -> Report:
     ReportError
         If the object type is not supported.
     """
+    # ------------------------------------------------------------------
+    # Raw-data shortcut: report((x, y), test="ttest")
+    # ------------------------------------------------------------------
+    test_name = kwargs.pop("test", None)
+    if test_name is not None:
+        obj = _run_raw_test(obj, test_name)
+
     obj_type = detect_type(obj)
 
     # Lazy imports of reporter classes to avoid circular imports
@@ -196,6 +230,97 @@ def report(obj, **kwargs) -> Report:
             f"Unsupported object type: {type(obj).__name__!r}. "
             "See pyreport.report() docstring for supported types."
         )
+
+
+# ---------------------------------------------------------------------------
+# _run_raw_test() helper for raw-data shortcut
+# ---------------------------------------------------------------------------
+
+_RAW_TEST_ALIASES = {
+    "ttest": ("ttest", "t-test", "t_test", "ttest_ind"),
+    "mannwhitney": ("mannwhitney", "mann_whitney", "mannwhitneyu", "mwu"),
+    "correlation": ("correlation", "pearsonr", "pearson", "corr"),
+    "kruskal": ("kruskal", "kruskalwallis", "kruskal_wallis"),
+    "wilcoxon": ("wilcoxon", "wilcoxon_signed_rank"),
+}
+
+_CANONICAL = {alias: canon for canon, aliases in _RAW_TEST_ALIASES.items() for alias in aliases}
+
+
+def _run_raw_test(obj, test: str):
+    """
+    Run a SciPy statistical test on raw array-like data and return the result.
+
+    Parameters
+    ----------
+    obj:
+        A single array-like (for wilcoxon) or a tuple/list of array-like objects.
+    test:
+        Name of the test to run (case-insensitive).  Supported: ``"ttest"``,
+        ``"mannwhitney"``, ``"correlation"``, ``"kruskal"``, ``"wilcoxon"``.
+
+    Returns
+    -------
+    SciPy result object.
+
+    Raises
+    ------
+    ReportError
+        If the test name is unrecognised or the data shape is incompatible.
+    """
+    from scipy import stats as _stats
+
+    canon = _CANONICAL.get(test.lower().replace("-", "_").replace(" ", "_"))
+    if canon is None:
+        raise ReportError(
+            f"Unknown test name {test!r} for raw-data shortcut. "
+            f"Supported values: {sorted(_RAW_TEST_ALIASES)}"
+        )
+
+    # Normalise obj to a list of arrays
+    import numpy as _np
+
+    if isinstance(obj, (_np.ndarray,)):
+        arrays = [obj]
+    elif isinstance(obj, (list, tuple)) and all(
+        isinstance(a, (_np.ndarray, list)) for a in obj
+    ):
+        arrays = [_np.asarray(a, float) for a in obj]
+    else:
+        # Try treating obj itself as a single array
+        try:
+            arrays = [_np.asarray(obj, float)]
+        except (TypeError, ValueError):
+            raise ReportError(
+                f"Cannot convert {type(obj).__name__!r} to array for test={test!r}. "
+                "Pass a numpy array, list, or tuple of arrays."
+            )
+
+    if canon == "ttest":
+        if len(arrays) < 2:
+            raise ReportError("test='ttest' requires two data arrays, e.g. report((x, y), test='ttest').")
+        return _stats.ttest_ind(arrays[0], arrays[1])
+
+    if canon == "mannwhitney":
+        if len(arrays) < 2:
+            raise ReportError("test='mannwhitney' requires two data arrays.")
+        return _stats.mannwhitneyu(arrays[0], arrays[1])
+
+    if canon == "correlation":
+        if len(arrays) < 2:
+            raise ReportError("test='correlation' requires two data arrays.")
+        return _stats.pearsonr(arrays[0], arrays[1])
+
+    if canon == "kruskal":
+        if len(arrays) < 2:
+            raise ReportError("test='kruskal' requires at least two data arrays.")
+        return _stats.kruskal(*arrays)
+
+    if canon == "wilcoxon":
+        arr = arrays[0] if len(arrays) == 1 else arrays[0] - arrays[1]
+        return _stats.wilcoxon(arr)
+
+    raise ReportError(f"Unhandled test name {test!r}.")  # pragma: no cover
 
 
 # ---------------------------------------------------------------------------

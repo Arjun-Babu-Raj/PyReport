@@ -137,3 +137,135 @@ class TestDispatcher:
         r = report(result, n=30)
         assert isinstance(r, Report)
         assert "wilcoxon" in r.to_text().lower()
+
+
+# ---------------------------------------------------------------------------
+# Improvement 1: text and statistics public properties
+# ---------------------------------------------------------------------------
+
+
+class TestReportProperties:
+    def test_text_property(self):
+        r = Report("Hello.", {"a": 1})
+        assert r.text == "Hello."
+
+    def test_text_property_readonly(self):
+        r = Report("Hello.", {"a": 1})
+        with pytest.raises(AttributeError):
+            r.text = "changed"
+
+    def test_statistics_property(self):
+        r = Report("Hello.", {"a": 1, "b": 2.5})
+        s = r.statistics
+        assert s["a"] == 1
+        assert s["b"] == 2.5
+
+    def test_statistics_property_is_copy(self):
+        r = Report("Hello.", {"a": 1})
+        s = r.statistics
+        s["extra"] = 99
+        assert "extra" not in r.statistics
+
+
+# ---------------------------------------------------------------------------
+# Improvement 2: statistics dict returns Python primitives
+# ---------------------------------------------------------------------------
+
+
+class TestStatisticsPrimitives:
+    def test_numpy_float_converted(self):
+        r = Report("Hello.", {"val": np.float64(3.14)})
+        v = r.statistics["val"]
+        assert type(v) is float, f"Expected float, got {type(v)}"
+
+    def test_numpy_int_converted(self):
+        r = Report("Hello.", {"n": np.int64(42)})
+        v = r.statistics["n"]
+        assert type(v) is int, f"Expected int, got {type(v)}"
+
+    def test_to_dict_primitives(self):
+        import json
+        x = RNG.normal(5.0, 1.0, 30)
+        y = RNG.normal(3.5, 1.0, 30)
+        result = stats.ttest_ind(x, y)
+        r = report(result, group_data=(x, y))
+        # Should be JSON-serialisable without a custom encoder
+        json.dumps(r.to_dict())
+
+    def test_nested_primitives(self):
+        import json
+        import statsmodels.api as sm
+        x = RNG.normal(0, 1, 50)
+        y = 2 * x + RNG.normal(0, 1, 50)
+        X = pd.DataFrame(sm.add_constant(x), columns=["const", "x"])
+        model = sm.OLS(y, X).fit()
+        r = report(model)
+        json.dumps(r.to_dict())
+
+
+# ---------------------------------------------------------------------------
+# Improvement 3: raw-data shortcut in report()
+# ---------------------------------------------------------------------------
+
+
+class TestRawDataShortcut:
+    def test_ttest_from_raw(self):
+        x = RNG.normal(5.0, 1.0, 30)
+        y = RNG.normal(3.5, 1.0, 30)
+        r = report((x, y), test="ttest")
+        assert isinstance(r, Report)
+        assert "t-test" in r.to_text().lower()
+
+    def test_mannwhitney_from_raw(self):
+        x = RNG.normal(5, 1, 30)
+        y = RNG.normal(4, 1, 30)
+        r = report((x, y), test="mannwhitney", n1=30, n2=30)
+        assert isinstance(r, Report)
+        assert "mann-whitney" in r.to_text().lower()
+
+    def test_correlation_from_raw(self):
+        x = RNG.normal(0, 1, 50)
+        y = x + RNG.normal(0, 0.3, 50)
+        r = report((x, y), test="correlation", n=50)
+        assert isinstance(r, Report)
+        assert "correlation" in r.to_text().lower()
+
+    def test_kruskal_from_raw(self):
+        x = RNG.normal(5, 1, 30)
+        y = RNG.normal(4, 1, 30)
+        z = RNG.normal(3, 1, 30)
+        r = report((x, y, z), test="kruskal", k=3, n=90)
+        assert isinstance(r, Report)
+        assert "kruskal" in r.to_text().lower()
+
+    def test_wilcoxon_from_raw_pair(self):
+        x = RNG.normal(5, 1, 30)
+        y = RNG.normal(4.5, 1, 30)
+        r = report((x, y), test="wilcoxon", n=30)
+        assert isinstance(r, Report)
+        assert "wilcoxon" in r.to_text().lower()
+
+    def test_wilcoxon_from_raw_single(self):
+        diff = RNG.normal(0.5, 1, 30)
+        r = report((diff,), test="wilcoxon", n=30)
+        assert isinstance(r, Report)
+        assert "wilcoxon" in r.to_text().lower()
+
+    def test_unknown_test_raises(self):
+        x = RNG.normal(0, 1, 10)
+        y = RNG.normal(0, 1, 10)
+        with pytest.raises(ReportError, match="Unknown test name"):
+            report((x, y), test="anova_something")
+
+    def test_ttest_missing_second_array_raises(self):
+        x = RNG.normal(0, 1, 10)
+        with pytest.raises(ReportError):
+            report((x,), test="ttest")
+
+    def test_raw_ttest_passes_kwargs(self):
+        x = RNG.normal(5.0, 1.0, 30)
+        y = RNG.normal(3.5, 1.0, 30)
+        r = report((x, y), test="ttest", group_names=("Control", "Treatment"), group_data=(x, y))
+        assert "Control" in r.to_text()
+        assert "Treatment" in r.to_text()
+

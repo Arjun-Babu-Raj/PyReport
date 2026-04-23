@@ -19,6 +19,54 @@ def _safe_import(module: str):
         return None
 
 
+# ---------------------------------------------------------------------------
+# Statistics normalisation helpers
+# ---------------------------------------------------------------------------
+
+
+def _sanitize_value(v):
+    """
+    Convert a single statistics value to a plain Python primitive.
+
+    Numpy scalar types (np.float64, np.int64, …) are converted to
+    ``float`` or ``int`` so that the statistics dictionary is always
+    JSON-serialisable without extra encoders.
+    """
+    # Import here to avoid making numpy a hard dependency at import time
+    try:
+        import numpy as np
+        if isinstance(v, np.integer):
+            return int(v)
+        if isinstance(v, np.floating):
+            return float(v)
+        if isinstance(v, np.bool_):
+            return bool(v)
+    except ImportError:
+        pass
+    return v
+
+
+def _sanitize_stats(d: dict) -> dict:
+    """
+    Recursively normalise a statistics dictionary so that all scalar
+    values are plain Python primitives (``float``, ``int``, ``bool``).
+
+    Nested dicts and lists are handled recursively.
+    """
+    result = {}
+    for k, v in d.items():
+        if isinstance(v, dict):
+            result[k] = _sanitize_stats(v)
+        elif isinstance(v, list):
+            result[k] = [
+                _sanitize_stats(item) if isinstance(item, dict) else _sanitize_value(item)
+                for item in v
+            ]
+        else:
+            result[k] = _sanitize_value(v)
+    return result
+
+
 def is_dataframe(obj) -> bool:
     pd = _safe_import("pandas")
     if pd is None:
