@@ -1,0 +1,50 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pyreport"
+version = "0.1.0"
+description = "Publication-ready statistical summaries with APA 7 formatting — a Python port of R's {report} package"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [
+    { name = "Arjun Babu Raj" }
+]
+keywords = ["statistics", "APA", "report", "psychology", "science"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+]
+dependencies = [
+    "numpy>=1.22",
+    "scipy>=1.9",
+    "pandas>=1.4",
+    "statsmodels>=0.13",
+]
+
+[project.optional-dependencies]
+pingouin = ["pingouin>=0.5"]
+dev = [
+    "pytest>=7",
+    "pytest-cov>=4",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["pyreport"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--tb=short -q"
+
+[tool.coverage.run]
+source = ["pyreport"]
+omit = ["tests/*"]
