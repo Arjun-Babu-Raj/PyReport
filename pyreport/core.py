@@ -280,7 +280,7 @@ def _run_raw_test(obj, test: str):
     # Normalise obj to a list of arrays
     import numpy as _np
 
-    if isinstance(obj, (_np.ndarray,)):
+    if isinstance(obj, _np.ndarray):
         arrays = [obj]
     elif isinstance(obj, (list, tuple)) and all(
         isinstance(a, (_np.ndarray, list)) for a in obj

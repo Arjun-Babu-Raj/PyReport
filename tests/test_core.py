@@ -255,7 +255,7 @@ class TestRawDataShortcut:
         x = RNG.normal(0, 1, 10)
         y = RNG.normal(0, 1, 10)
         with pytest.raises(ReportError, match="Unknown test name"):
-            report((x, y), test="anova_something")
+            report((x, y), test="invalid_test")
 
     def test_ttest_missing_second_array_raises(self):
         x = RNG.normal(0, 1, 10)
