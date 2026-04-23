@@ -86,11 +86,10 @@ class OLSReporter(BaseReporter):
             text += f"{'was' if len(sig_preds) == 1 else 'were'} significant predictor{'s' if len(sig_preds) > 1 else ''}. "
 
         if ns_preds:
-            text += ", ".join(ns_preds[:-1])
             if len(ns_preds) > 1:
-                text += ", and " + ns_preds[-1]
+                text += ", ".join(ns_preds[:-1]) + ", and " + ns_preds[-1]
             else:
-                text += ns_preds[-1] if not ns_preds[:-1] else ""
+                text += ns_preds[0]
             text += f" {'was' if len(ns_preds) == 1 else 'were'} not significant."
 
         # Statistics dict

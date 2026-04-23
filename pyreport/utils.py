@@ -107,11 +107,6 @@ def is_statsmodels_ols(obj) -> bool:
         hasattr(obj, "params")
         and hasattr(obj, "rsquared")
         and hasattr(obj, "fvalue")
-        and not hasattr(obj, "llf")
-    ) or (
-        hasattr(obj, "params")
-        and hasattr(obj, "rsquared")
-        and hasattr(obj, "fvalue")
     )
 
 
