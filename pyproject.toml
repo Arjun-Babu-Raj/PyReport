@@ -33,6 +33,7 @@ dependencies = [
 
 [project.optional-dependencies]
 pingouin = ["pingouin>=0.5"]
+anova = ["pingouin>=0.5"]
 dev = [
     "pytest>=7",
     "pytest-cov>=4",
