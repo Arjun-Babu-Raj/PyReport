@@ -1,5 +1,5 @@
 ---
-title: 'PyReport: A package for Publication-Ready Statistical Summaries in Python'
+title: 'PyReport: A Python package for Publication-Ready Statistical Test Summaries'
 tags:
   - Python
   - statistics
