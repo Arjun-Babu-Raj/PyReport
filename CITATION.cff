@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 message: "If you use pyreport in your research, please cite it using the metadata below."
-title: "PyReport: A Python Package for Publication-Ready Statistical Summaries in Python"
+title: "PyReport: A Python Package for Publication-Ready Statistical Test Summaries"
 version: "1.2.0"
 date-released: "23-04-2026"
 license: MIT
@@ -27,7 +27,7 @@ authors:
     affiliation: All India institute of Medical Sciences, Bhopal
 preferred-citation:
   type: software
-  title: "PyReport: A Python Package for Publication-Ready Statistical Summaries in Python"
+  title: "PyReport: A Python Package for Publication-Ready Statistical Test Summaries"
   authors:
     - family-names: "B"
       given-names: "Arjun"
