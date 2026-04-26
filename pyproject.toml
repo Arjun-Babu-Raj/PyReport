@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "pyreport"
-version = "0.1.0"
+version = "1.2.0"
 description = "Publication-ready statistical summaries with APA 7 formatting — a Python port of R's {report} package"
 readme = "README.md"
 requires-python = ">=3.9"
