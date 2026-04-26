@@ -1,5 +1,5 @@
 ---
-title: 'pyreport: Publication-Ready Statistical Summaries in Python'
+title: 'PyReport: A package for Publication-Ready Statistical Summaries in Python'
 tags:
   - Python
   - statistics
@@ -7,13 +7,13 @@ tags:
   - reproducible research
   - open science
 authors:
-  - name: Arjun Babu Raj
-    orcid: 0000-0000-0000-0000   # TODO: replace with your real ORCID (https://orcid.org)
+  - name: Arjun B
+    orcid: 0009-0003-0241-9796
     affiliation: 1
 affiliations:
-  - name: Independent Researcher   # TODO: replace with your institution name
+  - name: All India institute of Medical Sciences, Bhopal
     index: 1
-date: 2024-01-01   # TODO: update to the actual submission date (YYYY-MM-DD)
+date: 26-04-2026
 bibliography: paper.bib
 ---
 
