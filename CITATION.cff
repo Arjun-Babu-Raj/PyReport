@@ -1,8 +1,8 @@
 cff-version: 1.2.0
 message: "If you use pyreport in your research, please cite it using the metadata below."
-title: "pyreport: Publication-Ready Statistical Summaries in Python"
-version: "0.1.0"
-date-released: "2024-01-01"  # TODO: update to the actual v0.1.0 release date
+title: "PyReport: A Python Package for Publication-Ready Statistical Summaries in Python"
+version: "1.2.0"
+date-released: "23-04-2026"
 license: MIT
 url: "https://github.com/Arjun-Babu-Raj/PyReport"
 repository-code: "https://github.com/Arjun-Babu-Raj/PyReport"
@@ -21,16 +21,16 @@ keywords:
   - open science
   - reproducibility
 authors:
-  - family-names: "Babu Raj"
+  - family-names: "B"
     given-names: "Arjun"
-    orcid: ""          # TODO: add your ORCID identifier (https://orcid.org)
-    affiliation: ""    # TODO: add your institution name
+    orcid: 0009-0003-0241-9796
+    affiliation: All India institute of Medical Sciences, Bhopal
 preferred-citation:
   type: software
-  title: "pyreport: Publication-Ready Statistical Summaries in Python"
+  title: "PyReport: A Python Package for Publication-Ready Statistical Summaries in Python"
   authors:
-    - family-names: "Babu Raj"
+    - family-names: "B"
       given-names: "Arjun"
-  version: "0.1.0"
+  version: "1.2.0"
   url: "https://github.com/Arjun-Babu-Raj/PyReport"
   license: MIT
