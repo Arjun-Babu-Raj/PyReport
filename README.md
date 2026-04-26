@@ -1,6 +1,6 @@
 # PyReport
 
-A Python package for publication-ready statistical reporting — a Python port of R's `{report}` package.
+A Python package for publication-ready statistical reporting.
 
 `pyreport` takes statistical objects (models, tests, dataframes) as input and returns
 human-readable plain-English summaries with statistics formatted to **APA 7** standards.
