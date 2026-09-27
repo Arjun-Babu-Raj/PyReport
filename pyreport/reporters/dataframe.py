@@ -25,7 +25,7 @@ class DataFrameReporter(BaseReporter):
         cat_cols = df.select_dtypes(exclude=[np.number]).columns.tolist()
 
         # Missing values
-        n_missing = int(df.isnull().sum().sum())
+        n_missing = int(df.isna().to_numpy().sum())
 
         # Build description strings
         parts: List[str] = []
@@ -72,12 +72,13 @@ class DataFrameReporter(BaseReporter):
             series = df[col].dropna()
             if len(series) == 0:
                 continue
-            vc = series.value_counts(normalize=True)
+            counts = series.value_counts()
+            vc = counts / counts.sum()
             cat_str = col + ": " + ", ".join(
                 f"{cat} {pct:.0%}" for cat, pct in vc.items()
             )
             cat_details.append(cat_str)
-            statistics[f"{col}_counts"] = series.value_counts().to_dict()
+            statistics[f"{col}_counts"] = counts.to_dict()
 
         if cat_details:
             parts[-1] += f" and {len(cat_cols)} categorical ({'; '.join(cat_details)})"
