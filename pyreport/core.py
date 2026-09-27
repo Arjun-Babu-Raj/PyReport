@@ -282,14 +282,28 @@ def _run_raw_test(obj, test: str):
 
     if isinstance(obj, _np.ndarray):
         arrays = [obj]
-    elif isinstance(obj, (list, tuple)) and all(
-        isinstance(a, (_np.ndarray, list)) for a in obj
-    ):
-        arrays = [_np.asarray(a, float) for a in obj]
+    elif isinstance(obj, (list, tuple)):
+        # Distinguish tuple/list of vectors (x, y, ...) from one flat vector.
+        if len(obj) > 0 and all(not _np.isscalar(a) for a in obj):
+            try:
+                arrays = [_np.asarray(a, float).ravel() for a in obj]
+            except (TypeError, ValueError):
+                raise ReportError(
+                    f"Cannot convert {type(obj).__name__!r} to array for test={test!r}. "
+                    "Pass numeric array-like data."
+                )
+        else:
+            try:
+                arrays = [_np.asarray(obj, float).ravel()]
+            except (TypeError, ValueError):
+                raise ReportError(
+                    f"Cannot convert {type(obj).__name__!r} to array for test={test!r}. "
+                    "Pass numeric array-like data."
+                )
     else:
         # Try treating obj itself as a single array
         try:
-            arrays = [_np.asarray(obj, float)]
+            arrays = [_np.asarray(obj, float).ravel()]
         except (TypeError, ValueError):
             raise ReportError(
                 f"Cannot convert {type(obj).__name__!r} to array for test={test!r}. "

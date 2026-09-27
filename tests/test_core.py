@@ -216,6 +216,13 @@ class TestRawDataShortcut:
         assert isinstance(r, Report)
         assert "t-test" in r.to_text().lower()
 
+    def test_ttest_from_raw_tuple_inputs(self):
+        x = tuple(RNG.normal(5.0, 1.0, 30))
+        y = tuple(RNG.normal(3.5, 1.0, 30))
+        r = report((x, y), test="ttest")
+        assert isinstance(r, Report)
+        assert "t-test" in r.to_text().lower()
+
     def test_mannwhitney_from_raw(self):
         x = RNG.normal(5, 1, 30)
         y = RNG.normal(4, 1, 30)
@@ -268,4 +275,3 @@ class TestRawDataShortcut:
         r = report((x, y), test="ttest", group_names=("Control", "Treatment"), group_data=(x, y))
         assert "Control" in r.to_text()
         assert "Treatment" in r.to_text()
-
